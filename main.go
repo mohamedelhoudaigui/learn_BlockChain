@@ -12,10 +12,8 @@ func init() {
 
 func main() {
 	bc := BlockChain.NewBlockChain()
-	bc.AddBlock()
-	bc.AddBlock()
-	bc.AddBlock()
-	bc.AddBlock()
-	bc.AddBlock()
+	bc.CreateBlock()
+	bc.CreateBlock()
+	bc.CreateBlock()
 	bc.Print()
 } 

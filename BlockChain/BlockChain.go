@@ -3,23 +3,16 @@ package BlockChain
 import (
 	"fmt"
 	"strings"
-	"web3_go/Hash"
 )
 
 type BlockChain struct {
 	trn_pool	[]string // transaction pool
 	chain		[]*Block
-	blockN      int
 }
 
-func (bc *BlockChain) AddBlock() *Block {
-	prHash := Hash.GetHash(bc.blockN - 1,
-				int(bc.chain[bc.blockN - 1].time),
-				bc.chain[bc.blockN - 1].prHash)
-
-	block := NewBlock(bc.blockN, prHash)
+func (bc *BlockChain) CreateBlock(Nonce int, Prhash [32]byte) *Block {
+	block := NewBlock(Nonce, Prhash)
 	bc.chain = append(bc.chain, block)
-	bc.blockN += 1
 	return block
 }
 
@@ -34,9 +27,8 @@ func (bc *BlockChain) Print() {
 //---------------------------------------
 
 func NewBlockChain() *BlockChain {
-	blockchain := new(BlockChain)
-	iniBlock := NewBlock(0, "0270")
-	blockchain.chain = append(blockchain.chain, iniBlock)
-	blockchain.blockN = 1
-	return blockchain
+	block := &Block{}
+	bc := new(BlockChain)
+	bc.CreateBlock(0, block.Hash())
+	return bc
 }
