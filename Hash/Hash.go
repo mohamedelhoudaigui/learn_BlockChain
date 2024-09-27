@@ -6,8 +6,8 @@ import (
 	"fmt"
 )
 
-func GetHash(chainN int, time int) string {
-	data := fmt.Sprintf("%d%d", chainN, time)
+func GetHash(chainN int, time int, prHash string) string {
+	data := fmt.Sprintf("%d%d%s", chainN, time, prHash)
 	hash := sha256.New()
 	hash.Write([]byte(data))
 	hashInBytes := hash.Sum(nil)

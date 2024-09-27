@@ -13,7 +13,10 @@ type BlockChain struct {
 }
 
 func (bc *BlockChain) AddBlock() *Block {
-	prHash := Hash.GetHash(bc.blockN - 1, int(bc.chain[bc.blockN - 1].time))
+	prHash := Hash.GetHash(bc.blockN - 1,
+				int(bc.chain[bc.blockN - 1].time),
+				bc.chain[bc.blockN - 1].prHash)
+
 	block := NewBlock(bc.blockN, prHash)
 	bc.chain = append(bc.chain, block)
 	bc.blockN += 1
