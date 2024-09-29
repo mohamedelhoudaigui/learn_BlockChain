@@ -9,20 +9,10 @@ func init() {
 	log.SetPrefix("Blockchain: ")
 }
 
-
 func main() {
-	bc := BlockChain.NewBlockChain()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.CreateBlock()
-	bc.Print()
+	//bc := BlockChain.NewBlockChain()
+	//bc.CreateBlock()
+	//bc.Print()
+	wallet := BlockChain.NewWallet()
+	wallet.Print()
 } 

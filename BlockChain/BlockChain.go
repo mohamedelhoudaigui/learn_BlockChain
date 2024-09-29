@@ -6,18 +6,27 @@ import (
 )
 
 type BlockChain struct {
-	Chain		[]*Block
+	Diffic			uint64
+	Chain			[]*Block
+	TransactionPool	[]*Transaction
+	Nblock			uint64
 }
 
-func (bc *BlockChain) CreateBlock() *Block {
+func	(bc *BlockChain) CreateBlock() *Block {
 	l := len(bc.Chain)
 	var PrHash [32]byte
 	if l != 0 {
 		PrHash = bc.Chain[len(bc.Chain) - 1].BlHash
 	}
-	block := NewBlock(PrHash)
+
+	block := NewBlock(PrHash, bc.Diffic)
 	bc.Chain = append(bc.Chain, block)
+	bc.Nblock += 1
 	return block
+}
+
+func	(bc *BlockChain) LastBlock() *Block {
+	return bc.Chain[len(bc.Chain) - 1]
 }
 
 func (bc *BlockChain) Print() {
@@ -32,6 +41,8 @@ func (bc *BlockChain) Print() {
 
 func NewBlockChain() *BlockChain {
 	bc := new(BlockChain)
+	bc.Diffic = 0
+	bc.Nblock = 1
 	bc.CreateBlock()
 	return bc
 }

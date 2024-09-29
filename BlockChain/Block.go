@@ -4,9 +4,10 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"math/big"
-	"math/rand"
 	"time"
 )
+
+//----------------impl-----------------
 
 type Block struct {
 	Nonce	uint64
@@ -28,9 +29,7 @@ func (b *Block) Print(){
 	fmt.Println("}")
 }
 
-//------------------------------------
-
-// CalcNonce -> CalcHash -> IsValidHash
+//---------------Nonce-------------------
 
 func	(b *Block) CalcNonce() {
 	b.Nonce = 0
@@ -50,18 +49,19 @@ func	(b *Block) CalcHash() [32]byte {
 
 func	(b *Block) IsValidHash(hash [32]byte) bool {
 	target := big.NewInt(1)
-	target.Lsh(target, 256-uint(b.Diffic))
+	target.Lsh(target, 256 - uint(b.Diffic))
 	tmp := new(big.Int).SetBytes(hash[:])
 	return tmp.Cmp(target) == -1
 }
 
-//----------------------------------------------------
 
-func NewBlock(prHash [32]byte) *Block {
+//-----------------------init-----------------------
+
+func NewBlock(prHash [32]byte, ChainDiffic uint64) *Block {
 	b := new(Block)
 	b.PrHash = prHash
 	b.Time = time.Now()
-	b.Diffic = uint64(rand.Intn(3) + 1)
+	b.Diffic = ChainDiffic
 	b.CalcNonce()
 	return (b)
 }
