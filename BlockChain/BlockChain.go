@@ -5,12 +5,42 @@ import (
 	"strings"
 )
 
+//------------impl----------------
+
 type BlockChain struct {
 	Diffic			uint64
 	Chain			[]*Block
 	TransactionPool	[]*Transaction
 	Nblock			uint64
 }
+
+func NewBlockChain() *BlockChain {
+	bc := new(BlockChain)
+	bc.Diffic = 0
+	bc.Nblock = 1
+	bc.CreateBlock()
+	return bc
+}
+
+
+//-------------server--------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//----------------------------
 
 func	(bc *BlockChain) CreateBlock() *Block {
 	l := len(bc.Chain)
@@ -35,14 +65,4 @@ func (bc *BlockChain) Print() {
 		block.Print()
 	}
 	fmt.Printf("%s\n", strings.Repeat("*", 60))
-}
-
-//---------------------------------------
-
-func NewBlockChain() *BlockChain {
-	bc := new(BlockChain)
-	bc.Diffic = 0
-	bc.Nblock = 1
-	bc.CreateBlock()
-	return bc
 }

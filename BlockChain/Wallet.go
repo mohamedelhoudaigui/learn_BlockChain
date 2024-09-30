@@ -1,10 +1,11 @@
 package BlockChain
 
 import (
-	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/rand"
+	"encoding/binary"
 	"fmt"
-	"math/big"
 	"strings"
 	"log"
 	"time"
@@ -12,45 +13,62 @@ import (
 
 
 type	Wallet struct {
-	PrivateKey	[32]byte
-	PublicKey	[32]byte
+	PrivateKey	*rsa.PrivateKey
+	PublicKey	*rsa.PublicKey
 	Balance		uint64
-}
-
-func	GenKeys() ([32]byte, [32]byte) {
-	r := rand.Reader
-	seed, err := rand.Int(r, new(big.Int).SetInt64(272727272727272727))
-	if err != nil {
-		log.Fatal(err) // or return an error
-	}
-	t := time.Now().UnixNano()
-	PublicKey := sha256.Sum256([]byte(fmt.Sprintf("%d%d", seed, t)))
-	PrivateKey := sha256.Sum256([]byte(fmt.Sprintf("%d%d%x", seed, t, PublicKey)))
-	return PublicKey, PrivateKey
 }
 
 func	(w *Wallet) Print() {
 	fmt.Printf("%s\n", strings.Repeat("*", 60))
-	fmt.Printf("Public key :	%x\n", w.PublicKey)
-	fmt.Printf("Private key :	%x\n", w.PrivateKey)
+	fmt.Printf("Public key :	%v\n", w.PublicKey)
+	fmt.Printf("Private key :	%v\n", w.PrivateKey)
 	fmt.Printf("Balance : %d\n", w.Balance)
 	fmt.Printf("%s\n", strings.Repeat("*", 60))
 }
 
-func	(w *Wallet) MakeTransaction(RecipientAddress [32]byte, Amount uint64) *Transaction {
+//-------------------------------
+
+func GenerateTransactionID(tx *Transaction) [32]byte {
+	h := sha256.New()
+
+	h.Write(tx.SenderAddress.N.Bytes())
+	binary.Write(h, binary.BigEndian, tx.SenderAddress.E)
+
+	h.Write(tx.RecipientAddress.N.Bytes())
+	binary.Write(h, binary.BigEndian, tx.RecipientAddress.E)
+
+	binary.Write(h, binary.BigEndian, tx.Amount)
+
+	binary.Write(h, binary.BigEndian, tx.Time.UnixNano())
+
+	randomBytes := make([]byte, 16)
+	rand.Read(randomBytes)
+
+	h.Write(randomBytes)
+
+	var ID [32]byte
+	copy(ID[:], h.Sum(nil))
+
+	return ID
+}
+
+func	(w *Wallet) MakeTransaction(RecipientAddress *rsa.PublicKey, Amount uint64) *Transaction {
 	tx := &Transaction{
 		SenderAddress: w.PublicKey,
 		RecipientAddress: RecipientAddress,
 		Amount: Amount,
 		Time: time.Now(),
 	}
-	Id := fmt.Sprint("%x%x%d%d", tx.SenderAddress, tx.RecipientAddress, tx.Amount, time.Now().UnixNano())
-	tx.TransactionID = sha256.Sum256([]byte(Id))
-	var Signature [32]byte
-	for i:= 0; i < 32; i++ {
-		Signature[i] = (tx.TransactionID[i] + w.PrivateKey[i]) % 255
+
+	ID := GenerateTransactionID(tx)
+	tx.TransactionID = ID
+
+	Signature, err := SignTransaction(tx.TransactionID[:], w.PrivateKey)
+	if err != nil {
+		log.Fatal("Error signing")
 	}
 	tx.Signature = Signature
+
 	return tx
 }
 
@@ -58,7 +76,12 @@ func	(w *Wallet) MakeTransaction(RecipientAddress [32]byte, Amount uint64) *Tran
 //-------------------------
 
 func	NewWallet() *Wallet {
-	PrivateKey, PublicKey := GenKeys()
+	PrivateKey, PublicKey, err := GenerateKeyPair()
+
+	if err != nil {
+		log.Fatal("Error gen keys")
+	}
+
 	return &Wallet{
 		PrivateKey:	PrivateKey,
 		PublicKey:	PublicKey,

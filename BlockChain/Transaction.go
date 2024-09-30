@@ -1,39 +1,40 @@
 package BlockChain
 
 import (
+	"crypto/rsa"
 	"fmt"
 	"strings"
 	"time"
 )
 
+//------------impl-----------------
+
 type	Transaction struct {
 	TransactionID		[32]byte
-	SenderAddress		[32]byte
-	RecipientAddress	[32]byte
+	SenderAddress		*rsa.PublicKey
+	RecipientAddress	*rsa.PublicKey
 	Amount				uint64
 	Time				time.Time
-	Signature			[32]byte
+	Signature			[]byte
 }
 
 func	(t *Transaction) Print() {
 	fmt.Printf("%s", strings.Repeat("=", 25))
-	fmt.Printf("sender address = %s\n", t.SenderAddress)
-	fmt.Printf("receiver address = %s\n", t.RecipientAddress)
-	fmt.Printf("value = %.1f\n", t.Amount)
-	fmt.Printf("time = %v\n", t.Time)
+	fmt.Println("sender address =", t.SenderAddress)
+	fmt.Println("receiver address =", t.RecipientAddress)
+	fmt.Println("value =", t.Amount)
+	fmt.Println("time =", t.Time)
 	fmt.Printf("%s", strings.Repeat("*", 60))
 }
 
-//-----------------------------
-
-
-
-//-----------------------------
-
-func	NewTransaction(SenderAddress string, RecipientAddress string, Amount float64) *Transaction {
+func	NewTransaction(SenderAddress *rsa.PublicKey, RecipientAddress *rsa.PublicKey, Amount uint64) *Transaction {
 	return &Transaction{
 		SenderAddress: SenderAddress,
 		RecipientAddress: RecipientAddress,
 		Amount: Amount,
 	}
 }
+
+//-------------------------------
+
+
