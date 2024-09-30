@@ -1,38 +1,59 @@
 package BlockChain
 
 import (
+	"bytes"
+	"encoding/json"
 	_ "encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net"
 )
 
-func Client(data *[]byte) {
+func Client(tx *[]byte) {
+
 	conn, err := net.Dial("tcp", "localhost:2727")
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("Error connecting to server: %v", err)
 		return
 	}
-	_, err = conn.Write(*data)
+	defer conn.Close()
+
+	_, err = conn.Write(*tx)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("Error sending data: %v", err)
 		return
 	}
-	conn.Close()
+	fmt.Println("Transaction sent successfully")
 }
 
-func HandleReq(Conn net.Conn, _Pool []*[]byte) {
-	defer Conn.Close()
-	buf := make([]byte, 1024)
-	_, err := Conn.Read(buf)
-	if err != nil {
-		log.Fatal(err)
+func HandleReq(conn net.Conn, _pool *[]*Transaction) {
+
+	defer conn.Close()
+
+	var buffer bytes.Buffer
+	_, err := io.Copy(&buffer, conn)
+	if err != nil && err != io.EOF {
+		log.Printf("Error reading from connection: %v", err)
+		return
 	}
-	fmt.Println(string(buf))
+
+	data := bytes.Trim(buffer.Bytes(), "\x00")
+
+	var transaction Transaction
+	err = json.Unmarshal(data, &transaction)
+	if err != nil {
+		log.Printf("Error parsing JSON: %v", err)
+		return
+	}
+
+	//*pool = append(*pool, &transaction)
+
+	transaction.Print()
 }
 
 
-func Server(_Pool [] *[]byte) {
+func Server(_Pool *[]*Transaction) {
     ln, err := net.Listen("tcp", ":2727")
     if err != nil {
         fmt.Println(err)
