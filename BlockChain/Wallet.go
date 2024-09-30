@@ -1,13 +1,15 @@
 package BlockChain
 
 import (
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
-	"crypto/rand"
 	"encoding/binary"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
-	"strings"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -31,15 +33,16 @@ func	(w *Wallet) Print() {
 func GenerateTransactionID(tx *Transaction) [32]byte {
 	h := sha256.New()
 
-	h.Write(tx.SenderAddress.N.Bytes())
-	binary.Write(h, binary.BigEndian, tx.SenderAddress.E)
+	h.Write([]byte(tx.SenderAddress)) // Convert tx.SenderAddress to []byte
 
-	h.Write(tx.RecipientAddress.N.Bytes())
-	binary.Write(h, binary.BigEndian, tx.RecipientAddress.E)
+	binary.Write(h, binary.BigEndian, []byte(tx.SenderAddress))
+
+	h.Write([]byte(tx.RecipientAddress))
+	binary.Write(h, binary.BigEndian, tx.RecipientAddress)
 
 	binary.Write(h, binary.BigEndian, tx.Amount)
 
-	binary.Write(h, binary.BigEndian, tx.Time.UnixNano())
+	binary.Write(h, binary.BigEndian, tx.Time)
 
 	randomBytes := make([]byte, 16)
 	rand.Read(randomBytes)
@@ -52,23 +55,24 @@ func GenerateTransactionID(tx *Transaction) [32]byte {
 	return ID
 }
 
-func	(w *Wallet) MakeTransaction(RecipientAddress *rsa.PublicKey, Amount uint64) *Transaction {
-	tx := &Transaction{
-		SenderAddress: w.PublicKey,
-		RecipientAddress: RecipientAddress,
-		Amount: Amount,
-		Time: time.Now(),
-	}
+func (w *Wallet) Serialise(Transaction *Transaction) []byte {
+	data, _ := json.Marshal(*Transaction)
+	return data
+}
 
+func (w *Wallet) MakeTransaction(RecipientAddress *rsa.PublicKey, Amount uint64) *Transaction {
+	tx := NewTransaction(w.PublicKey, RecipientAddress, Amount)
+	tx.Time = uint64(time.Now().UnixNano())
 	ID := GenerateTransactionID(tx)
-	tx.TransactionID = ID
-
-	Signature, err := SignTransaction(tx.TransactionID[:], w.PrivateKey)
+	tx.TransactionID = hex.EncodeToString(ID[:])
+	Signature, err := SignTransaction(ID[:], w.PrivateKey) // Convert ID to []byte
 	if err != nil {
 		log.Fatal("Error signing")
 	}
-	tx.Signature = Signature
+	tx.Signature = hex.EncodeToString(Signature)
 
+	JsonTransaction := w.Serialise(tx)
+	Client(&JsonTransaction)
 	return tx
 }
 

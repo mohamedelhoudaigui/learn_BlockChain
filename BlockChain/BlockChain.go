@@ -10,7 +10,7 @@ import (
 type BlockChain struct {
 	Diffic			uint64
 	Chain			[]*Block
-	TransactionPool	[]*Transaction
+	TransactionPool	[] *[]byte
 	Nblock			uint64
 }
 
@@ -27,16 +27,9 @@ func NewBlockChain() *BlockChain {
 
 
 
-
-
-
-
-
-
-
-
-
-
+func	(bc *BlockChain) LaunchServer() {
+	Server(bc.TransactionPool)
+}
 
 
 
