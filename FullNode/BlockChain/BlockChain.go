@@ -27,7 +27,8 @@ func NewBlockChain() *BlockChain {
 
 
 func	(bc *BlockChain) LaunchServer() {
-	Server(&bc.TransactionPool)
+	go Server(&bc.TransactionPool, bc)
+	
 }
 
 //----------------------------
@@ -53,6 +54,11 @@ func (bc *BlockChain) Print() {
 	for i, block := range bc.Chain {
 		fmt.Printf("%s block number %d %s\n", strings.Repeat("=", 25), i, strings.Repeat("=", 25))
 		block.Print()
+	}
+	fmt.Printf("%s\n", strings.Repeat("$", 60))
+	fmt.Println("Transaction pool :")
+	for _, T := range bc.TransactionPool {
+		T.Print()
 	}
 	fmt.Printf("%s\n", strings.Repeat("*", 60))
 }
