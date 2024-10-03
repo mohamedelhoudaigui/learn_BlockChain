@@ -25,10 +25,14 @@ func NewBlockChain() *BlockChain {
 //-------------server--------------
 
 
-
 func	(bc *BlockChain) LaunchServer() {
 	go Server(&bc.TransactionPool, bc)
-	
+}
+
+func (bc *BlockChain) AddValidTransaction(tx *Transaction) {
+	LastBlock := bc.LastBlock()
+	LastBlock.Trs = append(LastBlock.Trs, tx)
+	tx.Print()
 }
 
 //----------------------------

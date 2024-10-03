@@ -28,7 +28,6 @@ func HandleReq(conn net.Conn, pool *[]*Transaction) *Transaction {
 	}
 
 	*pool = append(*pool, &tx)
-	tx.Print()
 	return &tx
 }
 
@@ -58,7 +57,10 @@ func Server(Pool *[]*Transaction, bc *BlockChain) {
 			fmt.Println(err)
 			continue
 		}
-  		HandleReq(Conn, Pool)
-		//Validate(tx)
+  		tx := HandleReq(Conn, Pool)
+		ver := VerifyTransaction(tx.SenderAddress, tx.TransactionID, tx.Signature)
+		if ver == nil {
+			bc.AddValidTransaction(tx)
+		}
 	}
 }
