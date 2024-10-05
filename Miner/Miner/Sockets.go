@@ -26,14 +26,13 @@ func GetOutboundIP() string {
 }
 
 
-func	GetState(Conn net.Conn) {
+func	GetState(Conn net.Conn) MinerData {
 	defer Conn.Close()
 
 	buf := make([]byte, 2048)
 	_, err := Conn.Read(buf)
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println("Error while reading (Miner->Sockets)", err)
 	}
 	Data := bytes.Trim(buf, "\x00")
 
@@ -41,15 +40,14 @@ func	GetState(Conn net.Conn) {
 
 	err = json.Unmarshal(Data, &State)
 	if err != nil {
-		log.Printf("Error marshaling to MinerData: %v", err)
-		return
+		log.Println("Error marshaling to MinerData (Miner->Sockets)", err)
 	}
-	fmt.Println(State)
+	return State
 }
 
-func	MinerServer(Port string) {
+func	MinerServer(Port string, State *MinerData) {
 	ip := GetOutboundIP() + ":" + Port
-	fmt.Printf("mining server started at : %s\n", ip)
+	fmt.Println("mining server started at :", ip)
 	ln, err := net.Listen("tcp", ip)
 	if err != nil {
 		fmt.Println(err)
@@ -61,6 +59,21 @@ func	MinerServer(Port string) {
 			fmt.Println(err)
 			continue
 		}
-		go GetState(Conn)
+		*State = GetState(Conn)
+	}
+}
+
+func Client(Data *[]byte, NodeAddress string) {
+	conn, err := net.Dial("tcp", NodeAddress)
+	if err != nil {
+		log.Printf("Error connecting to server: %v", err)
+		return
+	}
+	defer conn.Close()
+
+	_, err = conn.Write(*Data)
+	if err != nil {
+		log.Printf("Error sending data: %v", err)
+		return
 	}
 }

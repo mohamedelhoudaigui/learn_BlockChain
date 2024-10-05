@@ -32,7 +32,11 @@ func	CreateBlock(Blocks *[]*Block, Diff *uint64, Nblock *uint64) *Block {
 }
 
 func	LastBlock(Blocks *[]*Block) *Block {
-	return (*Blocks)[len(*Blocks) - 1]
+	if len(*Blocks) - 1 == -1 {
+		return (*Blocks)[0]
+	} else {
+		return (*Blocks)[len(*Blocks) - 1]
+	}
 }
 
 func	StartMining(State MinerData) {

@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-func Client(tx *[]byte, NodeAddress string) {
+func Client(Data *[]byte, NodeAddress string) {
 	conn, err := net.Dial("tcp", NodeAddress)
 	if err != nil {
 		log.Printf("Error connecting to server: %v", err)
@@ -13,7 +13,7 @@ func Client(tx *[]byte, NodeAddress string) {
 	}
 	defer conn.Close()
 
-	_, err = conn.Write(*tx)
+	_, err = conn.Write(*Data)
 	if err != nil {
 		log.Printf("Error sending data: %v", err)
 		return
