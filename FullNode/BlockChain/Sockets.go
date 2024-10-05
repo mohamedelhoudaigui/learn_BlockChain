@@ -22,20 +22,17 @@ func	ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
 }
 
 func	ReqFromMiner(Conn net.Conn, bc *BlockChain) {
-	defer Conn.Close()
-	var	State MinerData
-
-	State.Chain = bc.Chain
-	State.Diff = bc.Diffic
-	State.Pool = bc.TransactionPool
-	
-	MState, _ := json.Marshal(State)
-	BytesWrited, err := Conn.Write(MState)
-	fmt.Println(BytesWrited, "-", err)
+	MinerAddr := "10.12.2.13:2525" // how to automate this ??
+	Conn.Close()
+	State := NewMinerData(bc)
+	JsonState, err := json.Marshal(State)
+	if err != nil {
+		log.Printf("Error Marshaling MinerData (FullNode->Sockets): %v", err)
+	}
+	Client(&JsonState, MinerAddr)
 }
 
 func HandleReq(Conn net.Conn, bc *BlockChain, Port string) {
-
 	var buffer bytes.Buffer
 	_, err := io.Copy(&buffer, Conn)
 	if err != nil && err != io.EOF {
@@ -77,6 +74,21 @@ func	Server(bc *BlockChain, Port string) {
 			fmt.Println(err)
 			continue
 		}
-  		HandleReq(Conn, bc, Port)
+		HandleReq(Conn, bc, Port)
+	}
+}
+
+func Client(Data *[]byte, Address string) {
+	fmt.Println("address of miner :", Address)
+	Conn, err := net.Dial("tcp", Address)
+	if err != nil {
+		log.Printf("Error connecting to server: %v", err)
+		return
+	}
+	defer Conn.Close()
+	_, err = Conn.Write(*Data)
+	if err != nil {
+		log.Printf("Error sending data: %v", err)
+		return
 	}
 }

@@ -44,5 +44,13 @@ func	NewTransaction(SenderAddress *rsa.PublicKey, RecipientAddress *rsa.PublicKe
 	}
 }
 
+func	NewMinerData(bc *BlockChain) *MinerData {
+	return &MinerData{
+		Chain: bc.Chain,
+		Pool: bc.TransactionPool,
+		Diff: bc.Diffic,
+	}
+}
+
 
 
