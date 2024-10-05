@@ -8,6 +8,12 @@ import (
 
 //------------impl-----------------
 
+type MinerData struct {
+	Chain	[]*Block
+	Pool	[]*Transaction
+	Diff	uint64
+}
+
 type	Transaction struct {
 	TransactionID		[]byte			`json:"transaction_id"`
 	SenderAddress		*rsa.PublicKey	`json:"sender_address"`
@@ -16,6 +22,7 @@ type	Transaction struct {
 	Time				uint64			`json:"time"`
 	Signature			[]byte			`json:"signature"`
 }
+
 func (t *Transaction) Print() {
     fmt.Println(strings.Repeat("-", 50))
     fmt.Printf("%-15s: %s\n", "Transaction ID", truncateAndFormat(t.TransactionID))

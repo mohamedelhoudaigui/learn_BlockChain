@@ -26,13 +26,10 @@ func NewBlockChain() *BlockChain {
 
 
 func	(bc *BlockChain) LaunchServer() {
-	go Server(&bc.TransactionPool, bc)
-}
-
-func (bc *BlockChain) AddValidTransaction(tx *Transaction) {
-	LastBlock := bc.LastBlock()
-	LastBlock.Trs = append(LastBlock.Trs, tx)
-	tx.Print()
+	PortWallet := "2727"
+	PortMiner := "2626"
+	go Server(bc, PortWallet)
+	go Server(bc, PortMiner)
 }
 
 //----------------------------

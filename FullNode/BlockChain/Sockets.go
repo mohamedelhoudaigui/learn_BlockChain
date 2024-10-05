@@ -9,26 +9,46 @@ import (
 	"net"
 )
 
-func HandleReq(conn net.Conn, pool *[]*Transaction) *Transaction {
-	defer conn.Close()
-
-	var buffer bytes.Buffer
-	_, err := io.Copy(&buffer, conn)
-	if err != nil && err != io.EOF {
-		log.Printf("Error reading from connection: %v", err)
-		return nil
-	}
-	data := bytes.Trim(buffer.Bytes(), "\x00")
-
+func	ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
+	defer Conn.Close()
 	var tx Transaction
-	err = json.Unmarshal(data, &tx)
+
+	err := json.Unmarshal(Data, &tx)
 	if err != nil {
 		log.Printf("Error parsing JSON: %v", err)
-		return nil
+		return
 	}
+	bc.TransactionPool = append(bc.TransactionPool, &tx)
+}
 
-	*pool = append(*pool, &tx)
-	return &tx
+func	ReqFromMiner(Conn net.Conn, bc *BlockChain) {
+	defer Conn.Close()
+	var	State MinerData
+
+	State.Chain = bc.Chain
+	State.Diff = bc.Diffic
+	State.Pool = bc.TransactionPool
+	
+	MState, _ := json.Marshal(State)
+	BytesWrited, err := Conn.Write(MState)
+	fmt.Println(BytesWrited, "-", err)
+}
+
+func HandleReq(Conn net.Conn, bc *BlockChain, Port string) {
+
+	var buffer bytes.Buffer
+	_, err := io.Copy(&buffer, Conn)
+	if err != nil && err != io.EOF {
+		log.Printf("Error reading from connection: %v", err)
+		return
+	}
+	Data := bytes.Trim(buffer.Bytes(), "\x00")
+
+	if Port == "2727"  { // remove static ports
+		ReqFromWallet(Conn, Data, bc)
+	} else if Port == "2626" {
+		ReqFromMiner(Conn, bc)
+	}
 }
 
 func GetOutboundIP() string {
@@ -43,9 +63,9 @@ func GetOutboundIP() string {
 	return localAddr.IP.String()
 }
 
-func Server(Pool *[]*Transaction, bc *BlockChain) {
-	ip := GetOutboundIP() + ":2727"
-	fmt.Printf("server started at : %s\n", ip) // change to ip
+func	Server(bc *BlockChain, Port string) {
+	ip := GetOutboundIP() + ":" + Port
+	fmt.Printf("server started at : %s\n", ip)
 	ln, err := net.Listen("tcp", ip)
 	if err != nil {
 		fmt.Println(err)
@@ -57,10 +77,6 @@ func Server(Pool *[]*Transaction, bc *BlockChain) {
 			fmt.Println(err)
 			continue
 		}
-  		tx := HandleReq(Conn, Pool)
-		ver := VerifyTransaction(tx.SenderAddress, tx.TransactionID, tx.Signature)
-		if ver == nil {
-			bc.AddValidTransaction(tx)
-		}
+  		HandleReq(Conn, bc, Port)
 	}
 }

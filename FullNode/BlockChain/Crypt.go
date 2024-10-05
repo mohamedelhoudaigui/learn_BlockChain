@@ -1,18 +1,10 @@
 package BlockChain
 
 import (
-	"crypto"
-	"crypto/rsa"
-	"crypto/sha256"
 	"encoding/hex"
 	"time"
 )
 
-// Verify signature
-func VerifyTransaction(publicKey *rsa.PublicKey, ID, signature []byte) error {
-    hashed := sha256.Sum256(ID)
-    return rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed[:], signature)
-}
 
 func truncateAndFormat(data []byte) string {
     if len(data) == 0 {
