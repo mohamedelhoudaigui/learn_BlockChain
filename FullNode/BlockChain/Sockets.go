@@ -10,6 +10,7 @@ import (
 )
 
 func	ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
+
 	defer Conn.Close()
 	var tx Transaction
 
@@ -22,17 +23,20 @@ func	ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
 }
 
 func	ReqFromMiner(Conn net.Conn, bc *BlockChain) {
-	MinerAddr := "10.12.2.13:2525" // how to automate this ??
+
+	MinerAddr := "10.12.9.7:2525" // how to automate this ??
 	Conn.Close()
 	State := NewMinerData(bc)
-	JsonState, err := json.Marshal(State)
+	JsonState, err := json.Marshal(*State)
 	if err != nil {
-		log.Printf("Error Marshaling MinerData (FullNode->Sockets): %v", err)
+		log.Printf("Error Marshaling MinerData (FullNode->Sockets): %v", err) //-------------------------------------------------------
 	}
-	Client(&JsonState, MinerAddr)
+	State.Print()
+	Client(JsonState, MinerAddr)
 }
 
 func HandleReq(Conn net.Conn, bc *BlockChain, Port string) {
+
 	var buffer bytes.Buffer
 	_, err := io.Copy(&buffer, Conn)
 	if err != nil && err != io.EOF {
@@ -49,6 +53,7 @@ func HandleReq(Conn net.Conn, bc *BlockChain, Port string) {
 }
 
 func GetOutboundIP() string {
+
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
 		return ""
@@ -61,6 +66,7 @@ func GetOutboundIP() string {
 }
 
 func	Server(bc *BlockChain, Port string) {
+
 	ip := GetOutboundIP() + ":" + Port
 	fmt.Printf("server started at : %s\n", ip)
 	ln, err := net.Listen("tcp", ip)
@@ -78,15 +84,15 @@ func	Server(bc *BlockChain, Port string) {
 	}
 }
 
-func Client(Data *[]byte, Address string) {
-	fmt.Println("address of miner :", Address)
+func Client(Data []byte, Address string) {
+
 	Conn, err := net.Dial("tcp", Address)
 	if err != nil {
 		log.Printf("Error connecting to server: %v", err)
 		return
 	}
 	defer Conn.Close()
-	_, err = Conn.Write(*Data)
+	_, err = Conn.Write(Data)
 	if err != nil {
 		log.Printf("Error sending data: %v", err)
 		return

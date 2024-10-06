@@ -17,7 +17,7 @@ type BlockChain struct {
 func NewBlockChain() *BlockChain {
 	bc := new(BlockChain)
 	bc.Diffic = 0
-	bc.Nblock = 1
+	bc.Nblock = 0
 	bc.CreateBlock()
 	return bc
 }
@@ -40,7 +40,6 @@ func	(bc *BlockChain) CreateBlock() *Block {
 	if l != 0 {
 		PrHash = bc.Chain[len(bc.Chain) - 1].BlHash
 	}
-
 	block := NewBlock(PrHash, bc.Diffic)
 	bc.Chain = append(bc.Chain, block)
 	bc.Nblock += 1

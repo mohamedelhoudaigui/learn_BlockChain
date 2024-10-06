@@ -34,6 +34,14 @@ func (t *Transaction) Print() {
     fmt.Println(strings.Repeat("-", 50))
 }
 
+func	(m *MinerData) Print() {
+	fmt.Println(strings.Repeat("-", 50))
+	fmt.Println("lenght of chain :", len(m.Chain))
+	fmt.Println("Number of transactions in pool :", len(m.Pool))
+	fmt.Println("difficulity level :", m.Diff)
+	fmt.Println(strings.Repeat("-", 50))
+}
+
 //-------------------------------
 
 func	NewTransaction(SenderAddress *rsa.PublicKey, RecipientAddress *rsa.PublicKey, Amount uint64) *Transaction {
