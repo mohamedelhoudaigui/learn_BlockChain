@@ -9,10 +9,9 @@ import (
 func main() {
 	FullNodeAddr := "10.12.9.7:2626"
 	data := ""
-	State := Miner.MinerData{}
-	data_b := []byte(data)
-	go Miner.MinerServer("2525", &State)
-	Miner.Client(&data_b, FullNodeAddr)
-	Miner.StartMining(State)
-	select {}
+	bc := Miner.BlockChain{}
+	PingData := []byte(data)
+
+	Miner.MinerServer("2525", &bc, &PingData, &FullNodeAddr)
+	Miner.StartMining(&bc)
 }

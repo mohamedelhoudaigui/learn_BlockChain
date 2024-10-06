@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 )
 
@@ -18,6 +19,13 @@ type Block struct {
 	Trs		[]*Transaction
 }
 
+type BlockChain struct {
+	Diffic			uint64
+	Chain			[]*Block
+	TransactionPool	[]*Transaction
+	Nblock			uint64
+}
+
 func (b *Block) Print(){
 	fmt.Println("Block {")
 	fmt.Printf("	prev hash: %x\n", b.PrHash)
@@ -28,6 +36,20 @@ func (b *Block) Print(){
 	fmt.Println("	difficulity:", b.Diffic)
 	fmt.Println("}")
 }
+
+func (bc *BlockChain) Print() {
+	for i, block := range bc.Chain {
+		fmt.Printf("%s block number %d %s\n", strings.Repeat("=", 25), i, strings.Repeat("=", 25))
+		block.Print()
+	}
+	fmt.Printf("%s\n", strings.Repeat("$", 60))
+	fmt.Println("Transaction pool :")
+	for _, T := range bc.TransactionPool {
+		T.Print()
+	}
+	fmt.Printf("%s\n", strings.Repeat("*", 60))
+}
+
 
 //---------------Nonce-------------------
 

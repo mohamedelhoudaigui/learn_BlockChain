@@ -27,7 +27,7 @@ func GetOutboundIP() string {
 }
 
 
-func	GetState(Conn net.Conn) MinerData {
+func	GetState(Conn net.Conn) BlockChain {
 
 	defer Conn.Close()
 
@@ -38,16 +38,16 @@ func	GetState(Conn net.Conn) MinerData {
 	}
 	Data := bytes.Trim(buffer.Bytes(), "\x00")
 
-	var	State MinerData
+	var	bc BlockChain
 
-	err = json.Unmarshal(Data, &State)
+	err = json.Unmarshal(Data, &bc)
 	if err != nil {
-		log.Println("Error marshaling to MinerData (Miner->Sockets)", err)
+		log.Println("Error marshaling to BlockChain (Miner->Sockets)", err)
 	}
-	return State
+	return bc
 }
 
-func	MinerServer(Port string, State *MinerData) {
+func	MinerServer(Port string, bc *BlockChain, PingData *[]byte, FullNodeAddr *string) {
 	ip := GetOutboundIP() + ":" + Port
 	fmt.Println("mining server started at :", ip)
 	ln, err := net.Listen("tcp", ip)
@@ -55,13 +55,16 @@ func	MinerServer(Port string, State *MinerData) {
 		fmt.Println(err)
 		return
 	}
+	Client(PingData, *FullNodeAddr)
 	for {
 		Conn, err := ln.Accept()
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
-		*State = GetState(Conn)
+		*bc = GetState(Conn)
+		bc.Print()
+		break
 	}
 }
 

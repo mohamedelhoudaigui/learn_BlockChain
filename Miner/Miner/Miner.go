@@ -7,12 +7,6 @@ import (
 	"fmt"
 )
 
-type MinerData struct {
-	Chain	[]*Block		`json:"chain_of_blocks"`
-	Pool	[]*Transaction	`json:"transaction_pool"`
-	Diff	uint64			`json:"difficulity"`
-}
-
 
 func VerifyTransaction(publicKey *rsa.PublicKey, ID, signature []byte) error {
     hashed := sha256.Sum256(ID)
@@ -31,22 +25,21 @@ func	CreateBlock(Blocks *[]*Block, Diff *uint64, Nblock *uint64) *Block {
 	return block
 }
 
-func	LastBlock(Blocks *[]*Block) *Block {
-	l := len(*Blocks)
-	if l == 0 {
+func	LastBlock(bc *BlockChain) *Block {
+	if bc.Nblock == 0 {
 		return nil
 	} else {
-		return (*Blocks)[l - 1]
+		return bc.Chain[bc.Nblock - 1]
 	}
 }
 
-func	StartMining(State MinerData) { //--------------
-	LBlock := LastBlock(&State.Chain)
-	var PrHash [32]byte
+func	StartMining(bc *BlockChain) { //--------------
+	LBlock := LastBlock(bc)
 	if LBlock != nil {
-		PrHash = LBlock.BlHash
+		Block := NewBlock(LBlock.BlHash, bc.Diffic)
+		Block.Trs = append(Block.Trs, bc.TransactionPool...)
+		fmt.Println("Block mined !")
+	} else {
+		fmt.Println("No last block !!")
 	}
-	Block := NewBlock(PrHash, State.Diff)
-	Block.Trs = append(Block.Trs, State.Pool...)
-	fmt.Println("Block mined !")
 }
