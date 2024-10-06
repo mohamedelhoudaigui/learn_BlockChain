@@ -19,7 +19,7 @@ func ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
 		log.Printf("Error parsing JSON: %v", err)
 		return
 	}
-	bc.TransactionPool = append(bc.TransactionPool, tx)
+	bc.TransactionPool = append(bc.TransactionPool, &tx)
 }
 
 func ReqFromMiner(Conn net.Conn, bc *BlockChain) {
