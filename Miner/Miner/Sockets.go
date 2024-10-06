@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	_ "encoding/json"
 	"fmt"
+	"io"
 	_ "io"
 	"log"
 	_ "log"
@@ -27,14 +28,15 @@ func GetOutboundIP() string {
 
 
 func	GetState(Conn net.Conn) MinerData {
+
 	defer Conn.Close()
 
-	buf := make([]byte, 2048)
-	_, err := Conn.Read(buf)
-	if err != nil {
-		log.Println("Error while reading (Miner->Sockets)", err)
+	var buffer bytes.Buffer
+	_, err := io.Copy(&buffer, Conn)
+	if err != nil && err != io.EOF {
+		log.Println("Error reading from connection :", err)
 	}
-	Data := bytes.Trim(buf, "\x00")
+	Data := bytes.Trim(buffer.Bytes(), "\x00")
 
 	var	State MinerData
 

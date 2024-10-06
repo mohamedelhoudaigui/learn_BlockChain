@@ -32,15 +32,21 @@ func	CreateBlock(Blocks *[]*Block, Diff *uint64, Nblock *uint64) *Block {
 }
 
 func	LastBlock(Blocks *[]*Block) *Block {
-	if len(*Blocks) - 1 == -1 {
-		return (*Blocks)[0]
+	l := len(*Blocks)
+	if l == 0 {
+		return nil
 	} else {
-		return (*Blocks)[len(*Blocks) - 1]
+		return (*Blocks)[l - 1]
 	}
 }
 
-func	StartMining(State MinerData) {
-	Block := NewBlock(LastBlock(&State.Chain).BlHash, State.Diff)
+func	StartMining(State MinerData) { //--------------
+	LBlock := LastBlock(&State.Chain)
+	var PrHash [32]byte
+	if LBlock != nil {
+		PrHash = LBlock.BlHash
+	}
+	Block := NewBlock(PrHash, State.Diff)
 	Block.Trs = append(Block.Trs, State.Pool...)
 	fmt.Println("Block mined !")
 }

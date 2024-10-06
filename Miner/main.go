@@ -7,7 +7,7 @@ import (
 
 
 func main() {
-	FullNodeAddr := "10.12.2.13:2626"
+	FullNodeAddr := "10.12.9.7:2626"
 	data := ""
 	State := Miner.MinerData{}
 	data_b := []byte(data)
