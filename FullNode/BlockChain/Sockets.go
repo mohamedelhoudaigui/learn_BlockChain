@@ -9,7 +9,7 @@ import (
 	"net"
 )
 
-func	ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
+func ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
 
 	defer Conn.Close()
 	var tx Transaction
@@ -19,19 +19,17 @@ func	ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
 		log.Printf("Error parsing JSON: %v", err)
 		return
 	}
-	bc.TransactionPool = append(bc.TransactionPool, &tx)
+	bc.TransactionPool = append(bc.TransactionPool, tx)
 }
 
-func	ReqFromMiner(Conn net.Conn, bc *BlockChain) {
+func ReqFromMiner(Conn net.Conn, bc *BlockChain) {
 
-	MinerAddr := "10.12.9.7:2525" // how to automate this ??
+	MinerAddr := "10.12.13.4:2525" // how to automate this ??
 	Conn.Close()
-	State := NewMinerData(bc)
-	JsonState, err := json.Marshal(*State)
+	JsonState, err := json.Marshal(*bc)
 	if err != nil {
 		log.Printf("Error Marshaling MinerData (FullNode->Sockets): %v", err) //-------------------------------------------------------
 	}
-	State.Print()
 	Client(JsonState, MinerAddr)
 }
 
@@ -45,7 +43,7 @@ func HandleReq(Conn net.Conn, bc *BlockChain, Port string) {
 	}
 	Data := bytes.Trim(buffer.Bytes(), "\x00")
 
-	if Port == "2727"  { // remove static ports
+	if Port == "2727" { // remove static ports
 		ReqFromWallet(Conn, Data, bc)
 	} else if Port == "2626" {
 		ReqFromMiner(Conn, bc)
@@ -65,7 +63,7 @@ func GetOutboundIP() string {
 	return localAddr.IP.String()
 }
 
-func	Server(bc *BlockChain, Port string) {
+func Server(bc *BlockChain, Port string) {
 
 	ip := GetOutboundIP() + ":" + Port
 	fmt.Printf("server started at : %s\n", ip)

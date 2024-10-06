@@ -9,8 +9,8 @@ import (
 
 type BlockChain struct {
 	Diffic			uint64
-	Chain			[]*Block
-	TransactionPool	[]*Transaction
+	Chain			[]Block
+	TransactionPool	[]Transaction
 	Nblock			uint64
 }
 
@@ -41,13 +41,13 @@ func	(bc *BlockChain) CreateBlock() *Block {
 		PrHash = bc.Chain[len(bc.Chain) - 1].BlHash
 	}
 	block := NewBlock(PrHash, bc.Diffic)
-	bc.Chain = append(bc.Chain, block)
+	bc.Chain = append(bc.Chain, *block)
 	bc.Nblock += 1
 	return block
 }
 
 func	(bc *BlockChain) LastBlock() *Block {
-	return bc.Chain[len(bc.Chain) - 1]
+	return &bc.Chain[len(bc.Chain) - 1]
 }
 
 func (bc *BlockChain) Print() {

@@ -1,13 +1,12 @@
 package main
 
 import (
-	"web3_miner/Miner"
 	_ "fmt"
+	"web3_miner/Miner"
 )
 
-
 func main() {
-	FullNodeAddr := "10.12.9.7:2626"
+	FullNodeAddr := "10.12.13.4:2626"
 	data := ""
 	bc := Miner.BlockChain{}
 	PingData := []byte(data)

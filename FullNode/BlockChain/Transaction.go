@@ -8,12 +8,6 @@ import (
 
 //------------impl-----------------
 
-type MinerData struct {
-	Chain	[]*Block
-	Pool	[]*Transaction
-	Diff	uint64
-}
-
 type	Transaction struct {
 	TransactionID		[]byte			`json:"transaction_id"`
 	SenderAddress		*rsa.PublicKey	`json:"sender_address"`
@@ -34,13 +28,7 @@ func (t *Transaction) Print() {
     fmt.Println(strings.Repeat("-", 50))
 }
 
-func	(m *MinerData) Print() {
-	fmt.Println(strings.Repeat("-", 50))
-	fmt.Println("lenght of chain :", len(m.Chain))
-	fmt.Println("Number of transactions in pool :", len(m.Pool))
-	fmt.Println("difficulity level :", m.Diff)
-	fmt.Println(strings.Repeat("-", 50))
-}
+
 
 //-------------------------------
 
@@ -51,14 +39,3 @@ func	NewTransaction(SenderAddress *rsa.PublicKey, RecipientAddress *rsa.PublicKe
 		Amount: 			Amount,
 	}
 }
-
-func	NewMinerData(bc *BlockChain) *MinerData {
-	return &MinerData{
-		Chain: bc.Chain,
-		Pool: bc.TransactionPool,
-		Diff: bc.Diffic,
-	}
-}
-
-
-
