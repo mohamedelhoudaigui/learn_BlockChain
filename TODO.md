@@ -1,3 +1,1 @@
-remove static miner ip in fullnode -> Sockets, remove static ips
-
-only one block gets send to miner !
+need to add blocks mined to the block chain
