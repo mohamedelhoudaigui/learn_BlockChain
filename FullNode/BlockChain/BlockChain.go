@@ -12,16 +12,18 @@ type BlockChain struct {
 	Chain			[]*Block
 	TransactionPool	[]*Transaction
 	MiningPort		string
+	MinerPort		string
 	WalletPort		string
 	Nblock			uint64
 }
 
-func NewBlockChain(Difficulity uint64, MiningPort string, WalletPort string) *BlockChain {
+func NewBlockChain(Difficulity uint64, MiningPort string, WalletPort string, MinerPort string) *BlockChain {
 	bc := new(BlockChain)
 	bc.Diffic = Difficulity
 	bc.Nblock = 0
 	bc.WalletPort = WalletPort
 	bc.MiningPort = MiningPort
+	bc.MinerPort = MinerPort
 	bc.CreateBlock()
 	return bc
 }

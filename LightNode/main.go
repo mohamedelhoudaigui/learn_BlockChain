@@ -5,8 +5,11 @@ import (
 )
 
 func main() {
-	NodeAdress := "10.12.13.4:2727"
+	NodeAdress := Wallet.GetOutboundIP()
+	WalletPort := "2727"
+	FullNodeAdress := NodeAdress + ":" + WalletPort
+
 	w1 := Wallet.NewWallet()
 	w2 := Wallet.NewWallet()
-	w1.MakeTransaction(w2.PublicKey, 12, NodeAdress)
+	w1.MakeTransaction(w2.PublicKey, 12, FullNodeAdress)
 }

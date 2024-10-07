@@ -2,14 +2,10 @@ package Miner
 
 import (
 	"bytes"
-	_ "bytes"
 	"encoding/json"
-	_ "encoding/json"
 	"fmt"
 	"io"
-	_ "io"
 	"log"
-	_ "log"
 	"net"
 )
 
@@ -63,7 +59,6 @@ func	MinerServer(Port string, bc *BlockChain, PingData *[]byte, FullNodeAddr *st
 			continue
 		}
 		*bc = GetState(Conn)
-		bc.Print()
 		break
 	}
 }

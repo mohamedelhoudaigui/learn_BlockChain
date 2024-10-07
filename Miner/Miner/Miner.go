@@ -33,13 +33,13 @@ func	LastBlock(bc *BlockChain) *Block {
 	}
 }
 
-func	StartMining(bc *BlockChain) { //--------------
+func	StartMining(bc *BlockChain) {
 	LBlock := LastBlock(bc)
 	if LBlock != nil {
 		Block := NewBlock(LBlock.BlHash, bc.Diffic)
 		Block.Trs = append(Block.Trs, bc.TransactionPool...)
 		fmt.Println("Block mined !")
 	} else {
-		fmt.Println("No last block !!")
+		fmt.Println("No block in the chain !!")
 	}
 }

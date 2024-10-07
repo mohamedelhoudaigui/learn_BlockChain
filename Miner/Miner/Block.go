@@ -28,8 +28,8 @@ type BlockChain struct {
 
 func (b *Block) Print(){
 	fmt.Println("Block {")
-	fmt.Printf("	prev hash: %x\n", b.PrHash)
-	fmt.Printf("	curr hash: %x\n", b.BlHash)
+	fmt.Printf("	prev hash: %.15x\n", b.PrHash)
+	fmt.Printf("	curr hash: %.15x\n", b.BlHash)
 	fmt.Println("	time:", b.Time)
 	fmt.Println("	nonce:", b.Nonce)
 	fmt.Println("	number of trs:", len(b.Trs))

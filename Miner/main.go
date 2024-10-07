@@ -1,12 +1,14 @@
 package main
 
 import (
-	_ "fmt"
 	"web3_miner/Miner"
 )
 
 func main() {
-	FullNodeAddr := "10.12.13.4:2626"
+
+	NodeAddr := Miner.GetOutboundIP()
+	MiningFullNodePort := "2626"
+	FullNodeAddr := NodeAddr + ":" + MiningFullNodePort
 	data := ""
 	bc := Miner.BlockChain{}
 	PingData := []byte(data)

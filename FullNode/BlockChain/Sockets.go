@@ -25,11 +25,11 @@ func ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
 
 func ReqFromMiner(Conn net.Conn, Data []byte, bc *BlockChain) {
 
-	MinerAddr := strings.Split(Conn.RemoteAddr().String(), ":")[0] + ":" + string(Data)
+	MinerAddr := strings.Split(Conn.RemoteAddr().String(), ":")[0] + ":" + bc.MinerPort
 	Conn.Close()
 	JsonState, err := json.Marshal(*bc)
 	if err != nil {
-		log.Printf("Error Marshaling MinerData (FullNode->Sockets): %v", err) //-------------------------------------------------------
+		log.Printf("Error Marshaling MinerData (FullNode->Sockets): %v", err)
 	}
 	Client(JsonState, MinerAddr)
 }
