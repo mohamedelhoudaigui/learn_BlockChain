@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"strings"
 )
 
 func ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
@@ -22,9 +23,9 @@ func ReqFromWallet(Conn net.Conn, Data []byte, bc *BlockChain) {
 	bc.TransactionPool = append(bc.TransactionPool, &tx)
 }
 
-func ReqFromMiner(Conn net.Conn, bc *BlockChain) {
+func ReqFromMiner(Conn net.Conn, Data []byte, bc *BlockChain) {
 
-	MinerAddr := "10.12.13.4:2525" // how to automate this ??
+	MinerAddr := strings.Split(Conn.RemoteAddr().String(), ":")[0] + ":" + string(Data)
 	Conn.Close()
 	JsonState, err := json.Marshal(*bc)
 	if err != nil {
@@ -43,10 +44,10 @@ func HandleReq(Conn net.Conn, bc *BlockChain, Port string) {
 	}
 	Data := bytes.Trim(buffer.Bytes(), "\x00")
 
-	if Port == "2727" { // remove static ports
+	if Port == bc.WalletPort {
 		ReqFromWallet(Conn, Data, bc)
-	} else if Port == "2626" {
-		ReqFromMiner(Conn, bc)
+	} else if Port == bc.MiningPort {
+		ReqFromMiner(Conn, Data, bc)
 	}
 }
 
@@ -63,10 +64,10 @@ func GetOutboundIP() string {
 	return localAddr.IP.String()
 }
 
-func Server(bc *BlockChain, Port string) {
+func Server(bc *BlockChain, Port string, Tag string) {
 
 	ip := GetOutboundIP() + ":" + Port
-	fmt.Printf("server started at : %s\n", ip)
+	fmt.Printf(Tag + " server started at : %s\n", ip)
 	ln, err := net.Listen("tcp", ip)
 	if err != nil {
 		fmt.Println(err)

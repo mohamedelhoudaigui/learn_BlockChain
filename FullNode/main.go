@@ -6,7 +6,12 @@ import (
 
 
 func main() {
-	bc := BlockChain.NewBlockChain()
+
+	var Difficulity	uint64 = 15
+	var WalletPort	string = "2727"
+	var MiningPort	string = "2626"
+
+	bc := BlockChain.NewBlockChain(Difficulity, MiningPort, WalletPort) // need to check Ports
 	bc.LaunchServer()
 	select {}
 }

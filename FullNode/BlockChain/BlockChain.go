@@ -11,13 +11,17 @@ type BlockChain struct {
 	Diffic			uint64
 	Chain			[]*Block
 	TransactionPool	[]*Transaction
+	MiningPort		string
+	WalletPort		string
 	Nblock			uint64
 }
 
-func NewBlockChain() *BlockChain {
+func NewBlockChain(Difficulity uint64, MiningPort string, WalletPort string) *BlockChain {
 	bc := new(BlockChain)
-	bc.Diffic = 0
+	bc.Diffic = Difficulity
 	bc.Nblock = 0
+	bc.WalletPort = WalletPort
+	bc.MiningPort = MiningPort
 	bc.CreateBlock()
 	return bc
 }
@@ -26,10 +30,8 @@ func NewBlockChain() *BlockChain {
 
 
 func	(bc *BlockChain) LaunchServer() {
-	PortWallet := "2727"
-	PortMiner := "2626"
-	go Server(bc, PortWallet)
-	go Server(bc, PortMiner)
+	go Server(bc, bc.MiningPort, "Mining")
+	go Server(bc, bc.WalletPort, "Wallet")
 }
 
 //----------------------------
